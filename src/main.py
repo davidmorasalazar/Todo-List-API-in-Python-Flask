@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User
+from models import db, User, todos
 #from models import Person
 
 app = Flask(__name__)
@@ -30,14 +30,22 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET'])
-def handle_hello():
+# @app.route('/user', methods=['GET'])
+# def handle_hello():
 
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
+#     response_body = {
+#         "msg": "Hello, this is your GET /user response "
+#     }
+@app.route('/get_todos', methods=['GET'])
+def get_todos():
 
-    return jsonify(response_body), 200
+    # get all the todos
+    query = todos.query.all()
+
+    # map the results and your list of people  inside of the all_people variable
+    results = list(map(lambda x: x.serialize(), query))
+
+    return jsonify(results), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
