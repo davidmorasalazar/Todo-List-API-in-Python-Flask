@@ -10,7 +10,6 @@ from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, todos
 #from models import Person
-
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DB_CONNECTION_STRING')
@@ -46,6 +45,26 @@ def get_todos():
     results = list(map(lambda x: x.serialize(), query))
 
     return jsonify(results), 200
+@app.route('/add_todos', methods=['POST'])
+def add_todos():
+    request_body = request.get_json()
+    print(request_body)
+    tod = Todos(done=request_body["done"], label=request_body["label"], id=request_body["id"])
+    db.session.add(tod)
+    db.session.commit()
+
+    return jsonify("All good"), 200
+
+@app.route('/del_todos/<int:tid>', methods=['DELETE'])
+def del_tod(tid):
+    
+    tod = Todos.query.get(tid)
+    if tod is None:
+        raise APIException('User not found', status_code=404)
+    db.session.delete(tod)
+    db.session.commit()
+    
+    return jsonify("All good"), 200
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
