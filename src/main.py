@@ -49,7 +49,7 @@ def get_todos():
 def add_todos():
     request_body = request.get_json()
     print(request_body)
-    tod = Todos(done=request_body["done"], label=request_body["label"], id=request_body["id"])
+    tod = todos(done=request_body["done"], label=request_body["label"])
     db.session.add(tod)
     db.session.commit()
 
@@ -58,7 +58,7 @@ def add_todos():
 @app.route('/del_todos/<int:tid>', methods=['DELETE'])
 def del_tod(tid):
     
-    tod = Todos.query.get(tid)
+    tod = todos.query.get(tid)
     if tod is None:
         raise APIException('User not found', status_code=404)
     db.session.delete(tod)
